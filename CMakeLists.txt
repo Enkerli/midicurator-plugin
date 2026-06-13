@@ -11,6 +11,7 @@ enkerli_add_midi_effect_plugin(MIDIcurator
     PRODUCT_NAME "MIDIcurator"
     PLUGIN_CODE  Mcur
     DESCRIPTION  "MIDI clip curation: import, tag, transform and audition clips host-synced"
+    ICON_BIG     "${CMAKE_SOURCE_DIR}/Assets/icon_1024.png"
 )
 
 target_sources(MIDIcurator PRIVATE Source/Plugin.cpp)
