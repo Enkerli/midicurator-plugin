@@ -23,7 +23,11 @@ import { tmpdir } from "node:os";
 const appDir = resolve(process.argv[2] ?? join(process.env.HOME, "Desktop/music-suite/apps/MIDIcurator"));
 const monorepoModules = resolve(appDir, "../../node_modules");
 console.log("building", appDir);
-execSync(`npx vite build --base ./${process.env.PSP_DEBUG ? " --minify false" : ""}`, { cwd: appDir, stdio: "inherit" });
+// MC_PLUGIN_BUILD marks this as the embedded plugin/standalone bundle, so
+// the app can deterministically hide desktop-webapp-only features (sample
+// loader, Apple Loops DB) that fetch co-located assets a WebView can't serve.
+execSync(`npx vite build --base ./${process.env.PSP_DEBUG ? " --minify false" : ""}`,
+  { cwd: appDir, stdio: "inherit", env: { ...process.env, MC_PLUGIN_BUILD: "1" } });
 
 const dist = join(appDir, "dist");
 let html = readFileSync(join(dist, "index.html"), "utf8");
