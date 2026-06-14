@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(MIDIcurator VERSION 0.1.0)
+project(MIDIcurator VERSION 0.1.1)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
@@ -10,6 +10,7 @@ enkerli_resolve_juce()
 enkerli_add_midi_effect_plugin(MIDIcurator
     PRODUCT_NAME "MIDIcurator"
     PLUGIN_CODE  Mcur
+    VERSION      "${PROJECT_VERSION}"
     DESCRIPTION  "MIDI clip curation: import, tag, transform and audition clips host-synced"
     ICON_BIG     "${CMAKE_SOURCE_DIR}/Assets/icon_1024.png"
 )
