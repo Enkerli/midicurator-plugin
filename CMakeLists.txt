@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(MIDIcurator VERSION 0.1.1)
+project(MIDIcurator VERSION 0.1.2)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
