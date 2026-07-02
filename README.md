@@ -32,3 +32,10 @@ cmake -B build-ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS   # then build/sign in Xcode
 `WebUI/index.html` is committed, so the plugin builds without node.
 Validation ladder: `auval -v aumi Mcur Enke`, pluginval strictness 8,
 then real hosts on ≥2 iPads (see enkerli-juce/TESTING.md).
+
+## Suite handoff
+
+This repo is part of the Enkerli music suite. For the whole-suite picture —
+repo map, conventions (leftmost-LSB bit order, structural spelling),
+build/validation ladders, and open queues — start at the suite handoff:
+<https://github.com/Enkerli/music-suite/blob/main/HANDOFF.md>.
