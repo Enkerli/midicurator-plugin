@@ -78,5 +78,15 @@ console.log("wrote WebUI/index.html", (html.length / 1024).toFixed(0) + " KB");
 
 // ── Smoke gate: render the EXACT artifact in a real WKWebView (the same
 // engine as iPadOS) before any device sees it.
-const smoke = join(process.cwd(), "enkerli-juce/tools/webview-smoke.swift");
-execSync(`swift ${JSON.stringify(smoke)} WebUI/index.html`, { stdio: "inherit" });
+//
+// macOS-only: WKWebView (and `swift`) exist only on Apple platforms. On
+// Linux there's no WKWebView to render into and `swift` isn't installed —
+// running it there just dies with "swift: not found" (status 127) and
+// blocks the whole build, so skip it. The gate still runs on every macOS
+// build, which is where device artifacts are actually produced and shipped.
+if (process.platform === "darwin") {
+  const smoke = join(process.cwd(), "enkerli-juce/tools/webview-smoke.swift");
+  execSync(`swift ${JSON.stringify(smoke)} WebUI/index.html`, { stdio: "inherit" });
+} else {
+  console.log("skipping WKWebView smoke gate (macOS-only) on", process.platform);
+}
