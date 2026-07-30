@@ -3,7 +3,6 @@
 #include "../enkerli-juce/src/EnkerliWebView.h"
 #include "../enkerli-juce/src/FileExport.h"
 #include "../enkerli-juce/src/FileImport.h"
-#include "../enkerli-juce/src/RuntimeInfo.h"
 #include "BinaryDataWebUI.h"
 
 class MIDIcuratorEditor : public juce::AudioProcessorEditor,
@@ -113,15 +112,18 @@ private:
         obj->setProperty ("playing", proc.transport.isPlaying());
         obj->setProperty ("beat", proc.scheduler.getClipBeat());
         web.emit ("transport", juce::var (obj));
-
-        if (++runtimeTick % 20 == 0) // every ~2 s at 10 Hz
-            web.emit ("runtime", enkerli::RuntimeInfo::snapshot (proc));
+        // No `runtime` push. RuntimeInfo::snapshot was emitted here every ~2s
+        // and nothing subscribed to it — this UI has no diagnostics display to
+        // put it in, so it was work done on a timer for nobody (found by
+        // music-suite tools/bridge-audit.mjs, 2026-07-30). Progression Studio
+        // uses the same template and DOES subscribe; the C++ half was copied
+        // here without the UI half. RuntimeInfo itself is untouched and still
+        // available if a diagnostics panel ever wants it.
     }
 
     MIDIcuratorProcessor& proc;
     enkerli::BridgedWebView web;
     bool pageReady = false;
-    int runtimeTick = 0;
 };
 
 inline juce::AudioProcessorEditor* MIDIcuratorProcessor::createEditor()
