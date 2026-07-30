@@ -16,11 +16,32 @@
 // browser-only feature). Only scripts the HTML references get inlined;
 // esbuild folds dynamic imports into the IIFE, where they stay dormant.
 import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
-const appDir = resolve(process.argv[2] ?? join(process.env.HOME, "Desktop/music-suite/apps/MIDIcurator"));
+// Where the monorepo app lives. The default used to be
+// $HOME/Desktop/music-suite, which stopped existing when the checkouts were
+// centralised under ~/Documents/Coding — so `node WebUI/build.mjs` silently
+// pointed at nothing, and "regenerate after app changes" quietly did not
+// (found 2026-07-30). Probe the same layouts the CMake side documents:
+// an explicit argument, $MUSIC_SUITE, a sibling checkout, or this repo nested
+// inside the monorepo. Fail loudly rather than build the wrong tree.
+const appDir = (() => {
+  const candidates = [
+    process.argv[2],
+    process.env.MUSIC_SUITE && join(process.env.MUSIC_SUITE, "apps/MIDIcurator"),
+    resolve(import.meta.dirname, "../../music-suite/apps/MIDIcurator"),  // sibling
+    resolve(import.meta.dirname, "../../../apps/MIDIcurator"),           // nested
+  ].filter(Boolean).map((p) => resolve(p));
+  const found = candidates.find((p) => existsSync(join(p, "package.json")));
+  if (!found) {
+    console.error("build.mjs: cannot find the MIDIcurator app. Tried:\n  " + candidates.join("\n  ")
+      + "\nPass the path explicitly, or set MUSIC_SUITE.");
+    process.exit(1);
+  }
+  return found;
+})();
 const monorepoModules = resolve(appDir, "../../node_modules");
 console.log("building", appDir);
 // MC_PLUGIN_BUILD marks this as the embedded plugin/standalone bundle, so
